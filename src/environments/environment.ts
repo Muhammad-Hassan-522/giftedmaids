@@ -19,7 +19,7 @@ export const environment = {
       },
       contact: {
         templateID: 'template_yaj08o5',
-        adminEmail: 'codebyhassann@gmail.com',
+        adminEmail: 'mhassanahmad905@gmail.com',
       },
     },
     publicKey: 'j9RfRz9VD6OIZHEjY',
