@@ -382,8 +382,8 @@ export class BookingComponent implements OnInit, AfterViewInit {
       return false;
     }
 
-    if (!this.address) {
-      this.errorMessage = 'Please select your location on the map.';
+    if (!this.address || this.address.trim().length < 5) {
+      this.errorMessage = 'Please provide an address (manual or from map).';
       return false;
     }
 
@@ -502,6 +502,11 @@ export class BookingComponent implements OnInit, AfterViewInit {
   openedPackage: string | null = null;
   togglePackage(pkgName: string) {
     this.openedPackage = this.openedPackage === pkgName ? null : pkgName;
+  }
+  clearMarker() {
+    if (this.marker) this.marker.remove();
+    this.lat = null;
+    this.lng = null;
   }
 
   getAddOnPrice(addOnName: string): number {
