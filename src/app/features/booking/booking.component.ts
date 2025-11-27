@@ -482,12 +482,15 @@ export class BookingComponent implements OnInit, AfterViewInit {
 
   private googleSignIn(): Promise<void> {
     return new Promise((resolve, reject) => {
-      const client = google.accounts.oauth2.initTokenClient({
+      const client = google.accounts.oauth2.initCodeClient({
         client_id: environment.google.clientId,
-        scope: 'https://www.googleapis.com/auth/calendar.events',
+        scope: environment.google.scope,
+        ux_mode: 'popup',
+        redirect_uri: environment.google.redirectUri,
         callback: (response: any) => {
-          if (response.access_token) {
-            gapi.client.setToken(response);
+          if (response.code) {
+            // PKCE flow: Google JS API will handle code exchange automatically
+            gapi.client.setToken({ access_token: response.access_token });
             resolve();
           } else {
             reject('Google Sign-In failed');
@@ -495,7 +498,7 @@ export class BookingComponent implements OnInit, AfterViewInit {
         },
       });
 
-      client.requestAccessToken();
+      client.requestCode();
     });
   }
 

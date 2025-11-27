@@ -8,7 +8,7 @@ export const environment = {
       'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest',
     ],
     scope: 'https://www.googleapis.com/auth/calendar.events',
-    // redirectUri: 'https://yourdomain.com/callback', // Add this if needed
+    redirectUri: 'https://www.giftedmaidsct.com',
   },
   emailJS: {
     serviceID: 'service_7cy67rm',
