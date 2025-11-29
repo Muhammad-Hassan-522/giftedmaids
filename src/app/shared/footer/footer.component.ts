@@ -24,5 +24,5 @@ export class FooterComponent {
   ];
 
   phone = '508-280-9008';
-  email = 'support@giftedmaidsct.com';
+  email = 'giftedmaidsct@gmail.com';
 }

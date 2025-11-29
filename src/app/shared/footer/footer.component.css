@@ -1,0 +1,27 @@
+/* Footer background and text */
+footer {
+  background-color: #000;
+  color: #facc15; /* Tailwind yellow-400 fallback if needed */
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Menu links */
+footer a {
+  transition: color 0.3s;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  footer .grid {
+    text-align: center;
+  }
+
+  footer .flex {
+    justify-content: center;
+  }
+
+  footer .space-y-3,
+  footer .space-y-2 {
+    gap: 0.5rem; /* smaller spacing on mobile */
+  }
+}

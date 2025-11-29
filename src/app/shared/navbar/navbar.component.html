@@ -1,14 +1,15 @@
 <nav
-  class="w-full fixed top-0 z-50 bg-black text-yellow-500 flex items-center justify-between p-6 md:p-10 h-20"
+  class="navbar-fixed w-full fixed top-0 left-0 p-4 md:p-6 flex items-center justify-between"
 >
   <!-- Logo -->
-  <div class="flex items-center gap-3 cursor-pointer select-none">
+  <div class="flex items-center cursor-pointer select-none nav-logo">
     <a [routerLink]="'/'">
-      <img [src]="logoPreview" alt="System Logo" class="w-28" />
+      <img [src]="logoPreview" alt="Logo" class="max-h-14" />
     </a>
   </div>
 
-  <ul class="hidden md:flex space-x-10 tracking-wide">
+  <!-- Desktop Menu -->
+  <ul class="hidden md:flex space-x-10 tracking-wide items-center">
     <li *ngFor="let link of navLinks">
       <a
         [routerLink]="link.path"
@@ -16,44 +17,37 @@
         #rla="routerLinkActive"
         [ngClass]="{
           'text-white': rla.isActive,
-          'text-yellow-500 hover:text-yellow-400': !rla.isActive
+          'text-yellow-500 hover:text-yellow-300': !rla.isActive
         }"
-        [routerLinkActiveOptions]="{ exact: true }"
-        class="transition-colors duration-300"
+        class="transition duration-300 text-lg"
       >
         {{ link.label }}
       </a>
     </li>
   </ul>
 
-  <div
-    class="hidden md:flex items-center bg-gray-800 text-white px-2 rounded-lg"
-  >
+  <!-- Desktop Search -->
+  <div class="hidden md:flex items-center bg-gray-800 text-white px-3 py-1 rounded-lg ml-6">
     <input
       type="text"
       [(ngModel)]="searchQuery"
       (keyup.enter)="onSearch()"
-      class="bg-transparent text-gray-400 placeholder-white/70 outline-none text-sm w-40"
+      class="bg-transparent text-gray-300 placeholder-white/70 outline-none text-sm w-40"
       placeholder="Search..."
     />
-    <button
-      (click)="onSearch()"
-      class="ml-1 text-xl font-semibold text-gray-400 hover:opacity-80 transition"
-    >
-      ⌕
-    </button>
+    <button (click)="onSearch()" class="ml-1 text-xl text-gray-300 hover:opacity-80">⌕</button>
   </div>
 
-  <!-- CTA Button -->
+  <!-- Desktop CTA -->
   <a
     [routerLink]="ctaButton.path"
-    class="hidden md:inline-block bg-yellow-500 text-black px-5 py-1.5 rounded-full font-semibold text-sm hover:opacity-90 transition"
+    class="hidden md:inline-block bg-yellow-500 text-black px-5 py-2 rounded-full font-semibold text-sm ml-6 hover:opacity-90"
   >
     {{ ctaButton.label }}
   </a>
 
-  <!-- Mobile Toggle -->
-  <button (click)="toggleMenu()" class="md:hidden focus:outline-none">
+  <!-- Hamburger Button -->
+  <button (click)="toggleMenu()" class="md:hidden focus:outline-none ml-4">
     <svg
       *ngIf="!isMenuOpen"
       xmlns="http://www.w3.org/2000/svg"
@@ -61,14 +55,11 @@
       viewBox="0 0 24 24"
       stroke-width="2"
       stroke="currentColor"
-      class="w-6 h-6 text-yellow-500"
+      class="w-8 h-8 text-yellow-500"
     >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        d="M4 6h16M4 12h16M4 18h16"
-      />
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
     </svg>
+
     <svg
       *ngIf="isMenuOpen"
       xmlns="http://www.w3.org/2000/svg"
@@ -76,13 +67,48 @@
       viewBox="0 0 24 24"
       stroke-width="2"
       stroke="currentColor"
-      class="w-6 h-6 text-yellow-500"
+      class="w-8 h-8 text-yellow-500"
     >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        d="M6 18L18 6M6 6l12 12"
-      />
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
     </svg>
   </button>
 </nav>
+
+<!-- MOBILE MENU -->
+<div
+  *ngIf="isMenuOpen"
+  class="md:hidden fixed top-20 left-0 w-full bg-black/60 backdrop-blur-md text-yellow-500 px-6 py-6 space-y-6 shadow-lg border-t border-gray-700 animate-slideDown"
+>
+  <!-- Links -->
+  <div class="flex flex-col space-y-4">
+    <a
+      *ngFor="let link of navLinks"
+      [routerLink]="link.path"
+      (click)="closeMenu()"
+      class="text-lg font-semibold hover:text-yellow-300"
+    >
+      {{ link.label }}
+    </a>
+  </div>
+
+  <!-- Search -->
+  <div class="bg-gray-800/70 text-white px-3 py-2 rounded-lg flex items-center">
+    <input
+      type="text"
+      [(ngModel)]="searchQuery"
+      (keyup.enter)="onSearch(); closeMenu()"
+      class="bg-transparent text-gray-300 outline-none text-sm w-full"
+      placeholder="Search..."
+    />
+    <button (click)="onSearch(); closeMenu()" class="ml-2 text-xl text-gray-400">⌕</button>
+  </div>
+
+  <!-- CTA Button -->
+  <a
+    [routerLink]="ctaButton.path"
+    (click)="closeMenu()"
+    class="block bg-yellow-500 text-black text-center py-3 rounded-full font-semibold text-lg hover:opacity-90"
+  >
+    {{ ctaButton.label }}
+  </a>
+</div>

@@ -1,0 +1,38 @@
+/* Fix navbar height + logo spacing */
+.navbar-fixed {
+  height: 80px;
+  background: #000;
+  z-index: 9999;
+}
+
+/* Prevent logo from being too big */
+.nav-logo img {
+  max-height: 55px;
+  width: auto;
+}
+
+/* Push page content down so navbar does not cover it */
+body {
+  padding-top: 80px;
+}
+
+/* Mobile dropdown animation */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slideDown {
+  animation: slideDown 0.25s ease-out;
+}
+
+/* Mobile dropdown background blur */
+.md\\:hidden.fixed {
+  backdrop-filter: blur(8px);
+}
