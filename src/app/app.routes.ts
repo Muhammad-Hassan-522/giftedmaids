@@ -5,12 +5,14 @@ import { ContactComponent } from './features/contact/contact.component';
 import { BookingComponent } from './features/booking/booking.component';
 import { TermsAndConditionsComponent } from './features/terms-and-conditions/terms-and-conditions.component';
 import { PrivacyPolicyComponent } from './features/privacy-policy/privacy-policy.component';
+import { TutorialComponent } from './features/tutorial/tutorial.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'services', component: ServicesComponent },
   { path: 'contact', component: ContactComponent },
   { path: 'book', component: BookingComponent },
+  { path: 'tutorial', component: TutorialComponent },
   { path: 'terms', component: TermsAndConditionsComponent },
   { path: 'privacy', component: PrivacyPolicyComponent },
   { path: '**', redirectTo: '', pathMatch: 'full' },

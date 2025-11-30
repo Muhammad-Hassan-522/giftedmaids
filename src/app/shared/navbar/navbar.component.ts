@@ -20,6 +20,7 @@ export class NavbarComponent {
     { label: 'Home', path: '/home' },
     { label: 'Services', path: '/services' },
     { label: 'Contact', path: '/contact' },
+    { label: 'Tutorial', path: '/tutorial' },
   ];
 
   ctaButton = {

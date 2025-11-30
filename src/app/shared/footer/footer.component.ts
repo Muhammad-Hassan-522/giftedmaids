@@ -21,6 +21,7 @@ export class FooterComponent {
     { label: 'Contact', path: '/contact' },
     { label: 'Terms and Conditions', path: '/terms' },
     { label: 'Privacy Policy', path: '/privacy' },
+    { label: 'How it works', path: '/tutorial' },
   ];
 
   phone = '508-280-9008';
