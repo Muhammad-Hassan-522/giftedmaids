@@ -56,45 +56,50 @@ export class BookingComponent implements OnInit, AfterViewInit {
             {
               homeSize: '1 bed / 1 bath / 1 kitchen / 1 dining',
               prices: {
+                '1 time and done': 189,
                 '1x/month': 189,
+                '2x/month': 185,
                 '3x/month': 180,
-                'Bi-Weekly': 175,
                 '4x/month': 170,
               },
             },
             {
               homeSize: '2 bed / 1 bath / 1 kitchen / 1 dining',
               prices: {
+                '1 time and done': 215,
                 '1x/month': 215,
+                '2x/month': 212,
                 '3x/month': 208,
-                'Bi-Weekly': 201,
                 '4x/month': 195,
               },
             },
             {
               homeSize: '2 bed / 2 bath / 1 kitchen / 1 dining',
               prices: {
+                '1 time and done': 245,
                 '1x/month': 245,
+                '2x/month': 241,
                 '3x/month': 239,
-                'Bi-Weekly': 231,
                 '4x/month': 225,
               },
             },
             {
               homeSize: '3 bed / 2 bath / 1 kitchen / 1 dining',
               prices: {
+                '1 time and done': 280,
                 '1x/month': 280,
+                '2x/month': 276,
                 '3x/month': 273,
-                'Bi-Weekly': 266,
                 '4x/month': 260,
               },
             },
             {
               homeSize: '3 bed / 3 bath / 1 kitchen / 1 dining',
               prices: {
+                '1 time and done': 320,
                 '1x/month': 320,
+                '2x/month': 317,
                 '3x/month': 312,
-                'Bi-Weekly': 306,
                 '4x/month': 299,
               },
             },
@@ -125,45 +130,50 @@ export class BookingComponent implements OnInit, AfterViewInit {
             {
               homeSize: '1 bed / 1 bath / 1 kitchen / 1 dining',
               prices: {
+                '1 time and done': 217,
                 '1x/month': 217,
+                '2x/month': 213,
                 '3x/month': 208,
-                'Bi-Weekly': 201,
                 '4x/month': 195,
               },
             },
             {
               homeSize: '2 bed / 1 bath / 1 kitchen / 1 dining',
               prices: {
+                '1 time and done': 250,
                 '1x/month': 250,
+                '2x/month': 247,
                 '3x/month': 242,
-                'Bi-Weekly': 234,
                 '4x/month': 225,
               },
             },
             {
               homeSize: '2 bed / 2 bath / 1 kitchen / 1 dining',
               prices: {
+                '1 time and done': 288,
                 '1x/month': 288,
+                '2x/month': 283,
                 '3x/month': 279,
-                'Bi-Weekly': 270,
                 '4x/month': 260,
               },
             },
             {
               homeSize: '3 bed / 2 bath / 1 kitchen / 1 dining',
               prices: {
+                '1 time and done': 331,
                 '1x/month': 331,
+                '2x/month': 326,
                 '3x/month': 321,
-                'Bi-Weekly': 311,
                 '4x/month': 300,
               },
             },
             {
               homeSize: '3 bed / 3 bath / 1 kitchen / 1 dining',
               prices: {
+                '1 time and done': 381,
                 '1x/month': 381,
+                '2x/month': 376,
                 '3x/month': 370,
-                'Bi-Weekly': 359,
                 '4x/month': 348,
               },
             },
@@ -434,15 +444,15 @@ export class BookingComponent implements OnInit, AfterViewInit {
   // ---------------- Google Calendar ----------------
   private loadGoogleApi() {
     const script = document.createElement('script');
-    script.src = "https://apis.google.com/js/api.js";
+    script.src = 'https://apis.google.com/js/api.js';
     script.onload = () => {
-      gapi.load("client:auth2", async () => {
+      gapi.load('client:auth2', async () => {
         await gapi.client.init({
           apiKey: environment.google.apiKey,
           clientId: environment.google.clientId,
-          scope: "https://www.googleapis.com/auth/calendar.events",
+          scope: 'https://www.googleapis.com/auth/calendar.events',
           discoveryDocs: [
-            "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"
+            'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest',
           ],
         });
       });
@@ -454,9 +464,11 @@ export class BookingComponent implements OnInit, AfterViewInit {
     try {
       await this.googleSignIn();
 
-      const startDateTime = new Date(`${this.selectedDate}T${this.selectedTime}`);
+      const startDateTime = new Date(
+        `${this.selectedDate}T${this.selectedTime}`
+      );
       const endDateTime = new Date(startDateTime);
-      endDateTime.setHours(endDateTime.getHours() + 1); // 1-hour event
+      endDateTime.setHours(endDateTime.getHours() + 2); // 2-hour event
 
       const event = {
         summary: `Cleaning Booking: ${this.selectedType} - ${this.selectedHomeSize}`,
@@ -482,19 +494,18 @@ export class BookingComponent implements OnInit, AfterViewInit {
         resource: event,
       });
 
-      console.log('Event added to user\'s Google Calendar');
+      console.log("Event added to user's Google Calendar");
     } catch (err) {
       console.error(' Google Calendar error:', err);
       this.errorMessage = 'Google Calendar integration failed.';
     }
   }
 
-
   private async googleSignIn(): Promise<void> {
     return new Promise((resolve, reject) => {
       const client = google.accounts.oauth2.initTokenClient({
         client_id: environment.google.clientId,
-        scope: "https://www.googleapis.com/auth/calendar.events",
+        scope: 'https://www.googleapis.com/auth/calendar.events',
         callback: (response: any) => {
           if (response.error) return reject(response);
           gapi.client.setToken({ access_token: response.access_token });
