@@ -468,7 +468,7 @@ export class BookingComponent implements OnInit, AfterViewInit {
         `${this.selectedDate}T${this.selectedTime}`
       );
       const endDateTime = new Date(startDateTime);
-      endDateTime.setHours(endDateTime.getHours() + 1); // 1-hour event
+      endDateTime.setHours(endDateTime.getHours() + 2); // 2-hour event
 
       const event = {
         summary: `Cleaning Booking: ${this.selectedType} - ${this.selectedHomeSize}`,
