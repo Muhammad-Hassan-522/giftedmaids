@@ -266,7 +266,8 @@ export class BookingComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.map = L.map('map').setView([24.8607, 67.0011], 12);
+    // Center map roughly on Connecticut
+    this.map = L.map('map').setView([41.6, -72.7], 10);
     L.tileLayer(
       'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
     ).addTo(this.map);
@@ -407,26 +408,27 @@ export class BookingComponent implements OnInit, AfterViewInit {
       instructions: this.instructions || 'None',
     };
 
-    try {
-      emailjs
-        .send(
-          environment.emailJS.serviceID,
-          environment.emailJS.templates.booking.templateID,
-          templateParams,
-          environment.emailJS.publicKey
-        )
-        .then(async (response) => {
-          if (response.status === 200) {
-            await this.addEventToGoogleCalendar();
-            this.successMessage =
-              '✅ Booking submitted successfully! Event added to your Google Calendar.';
-            this.errorMessage = '';
-          }
-        });
-    } catch (err) {
-      console.error('Error:', err);
-      this.errorMessage = 'Something went wrong while sending the booking.';
-    }
+    emailjs
+      .send(
+        environment.emailJS.serviceID,
+        environment.emailJS.templates.booking.templateID,
+        templateParams,
+        environment.emailJS.publicKey
+      )
+      .then(async (response) => {
+        if (response.status === 200) {
+          await this.addEventToGoogleCalendar();
+          this.successMessage =
+            '✅ Booking submitted successfully! Event added to your Google Calendar.';
+          this.errorMessage = '';
+        } else {
+          this.errorMessage = 'EmailJS failed to send booking.';
+        }
+      })
+      .catch((err) => {
+        console.error('EmailJS error:', err);
+        this.errorMessage = 'Something went wrong while sending the booking.';
+      });
   }
 
   // ---------------- Google Calendar ----------------
@@ -452,6 +454,10 @@ export class BookingComponent implements OnInit, AfterViewInit {
     try {
       await this.googleSignIn();
 
+      const startDateTime = new Date(`${this.selectedDate}T${this.selectedTime}`);
+      const endDateTime = new Date(startDateTime);
+      endDateTime.setHours(endDateTime.getHours() + 1); // 1-hour event
+
       const event = {
         summary: `Cleaning Booking: ${this.selectedType} - ${this.selectedHomeSize}`,
         location: this.address,
@@ -461,44 +467,44 @@ export class BookingComponent implements OnInit, AfterViewInit {
           `Frequency: ${this.selectedFrequency || 'Base Rate'}\n` +
           `Add-ons: ${this.selectedAddOns.join(', ') || 'None'}\n` +
           `Instructions: ${this.instructions || 'None'}`,
-
         start: {
-          dateTime: `${this.selectedDate}T${this.selectedTime}:00`,
-          timeZone: "America/New_York", // since client is U.S-based — adjust if needed
+          dateTime: startDateTime.toISOString(),
+          timeZone: 'America/New_York',
         },
         end: {
-          dateTime: `${this.selectedDate}T${this.selectedTime}:00`,
-          timeZone: "America/New_York",
+          dateTime: endDateTime.toISOString(),
+          timeZone: 'America/New_York',
         },
       };
 
       await gapi.client.calendar.events.insert({
-        calendarId: "primary",
+        calendarId: 'primary',
         resource: event,
       });
 
-      console.log("✅ Event added to user's Google Calendar");
+      console.log('Event added to user\'s Google Calendar');
     } catch (err) {
-      console.error("❌ Google Calendar error:", err);
-      this.errorMessage = "Google Calendar integration failed.";
+      console.error(' Google Calendar error:', err);
+      this.errorMessage = 'Google Calendar integration failed.';
     }
   }
 
+
   private async googleSignIn(): Promise<void> {
-    const auth = gapi.auth2.getAuthInstance();
+    return new Promise((resolve, reject) => {
+      const client = google.accounts.oauth2.initTokenClient({
+        client_id: environment.google.clientId,
+        scope: "https://www.googleapis.com/auth/calendar.events",
+        callback: (response: any) => {
+          if (response.error) return reject(response);
+          gapi.client.setToken({ access_token: response.access_token });
+          resolve();
+        },
+      });
 
-    if (!auth) {
-      throw new Error("Google Auth instance not loaded");
-    }
-
-    // Opens Google Account popup
-    await auth.signIn();
-
-    const user = auth.currentUser.get();
-    const token = user.getAuthResponse(true).access_token;
-
-    // Apply token to gapi client
-    gapi.client.setToken({ access_token: token });
+      // Opens popup automatically
+      client.requestAccessToken();
+    });
   }
 
   openedPackage: string | null = null;
