@@ -432,13 +432,15 @@ export class BookingComponent implements OnInit, AfterViewInit {
   // ---------------- Google Calendar ----------------
   private loadGoogleApi() {
     const script = document.createElement('script');
-    script.src = 'https://apis.google.com/js/api.js';
-    script.onload = async () => {
-      await gapi.load('client', async () => {
+    script.src = "https://apis.google.com/js/api.js";
+    script.onload = () => {
+      gapi.load("client:auth2", async () => {
         await gapi.client.init({
           apiKey: environment.google.apiKey,
+          clientId: environment.google.clientId,
+          scope: "https://www.googleapis.com/auth/calendar.events",
           discoveryDocs: [
-            'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest',
+            "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"
           ],
         });
       });
@@ -453,53 +455,50 @@ export class BookingComponent implements OnInit, AfterViewInit {
       const event = {
         summary: `Cleaning Booking: ${this.selectedType} - ${this.selectedHomeSize}`,
         location: this.address,
-        description: `Type: ${this.selectedType}\nHome Size: ${
-          this.selectedHomeSize
-        }\nFrequency: ${this.selectedFrequency || 'Base Rate'}\nAdd-ons: ${
-          this.selectedAddOns.join(', ') || 'None'
-        }\nInstructions: ${this.instructions || 'None'}`,
+        description:
+          `Type: ${this.selectedType}\n` +
+          `Home Size: ${this.selectedHomeSize}\n` +
+          `Frequency: ${this.selectedFrequency || 'Base Rate'}\n` +
+          `Add-ons: ${this.selectedAddOns.join(', ') || 'None'}\n` +
+          `Instructions: ${this.instructions || 'None'}`,
+
         start: {
           dateTime: `${this.selectedDate}T${this.selectedTime}:00`,
-          timeZone: 'Asia/Karachi',
+          timeZone: "America/New_York", // since client is U.S-based — adjust if needed
         },
         end: {
           dateTime: `${this.selectedDate}T${this.selectedTime}:00`,
-          timeZone: 'Asia/Karachi',
+          timeZone: "America/New_York",
         },
       };
 
       await gapi.client.calendar.events.insert({
-        calendarId: 'primary',
+        calendarId: "primary",
         resource: event,
       });
 
-      console.log('✅ Event added to Google Calendar');
+      console.log("✅ Event added to user's Google Calendar");
     } catch (err) {
-      console.error('Google Calendar error:', err);
-      this.errorMessage = 'Google Calendar integration failed.';
+      console.error("❌ Google Calendar error:", err);
+      this.errorMessage = "Google Calendar integration failed.";
     }
   }
 
-  private googleSignIn(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const client = google.accounts.oauth2.initCodeClient({
-        client_id: environment.google.clientId,
-        scope: environment.google.scope,
-        ux_mode: 'popup',
-        redirect_uri: environment.google.redirectUri,
-        callback: (response: any) => {
-          if (response.code) {
-            // PKCE flow: Google JS API will handle code exchange automatically
-            gapi.client.setToken({ access_token: response.access_token });
-            resolve();
-          } else {
-            reject('Google Sign-In failed');
-          }
-        },
-      });
+  private async googleSignIn(): Promise<void> {
+    const auth = gapi.auth2.getAuthInstance();
 
-      client.requestCode();
-    });
+    if (!auth) {
+      throw new Error("Google Auth instance not loaded");
+    }
+
+    // Opens Google Account popup
+    await auth.signIn();
+
+    const user = auth.currentUser.get();
+    const token = user.getAuthResponse(true).access_token;
+
+    // Apply token to gapi client
+    gapi.client.setToken({ access_token: token });
   }
 
   openedPackage: string | null = null;
